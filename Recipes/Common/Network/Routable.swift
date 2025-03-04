@@ -9,9 +9,9 @@ import Foundation
 
 protocol Routable {
     var url: URL { get }
-    var method: HTTPMethod { get }
+    var httpMethod: HTTPMethod { get }
 }
 
-enum HTTPMethod {
-    case get
+enum HTTPMethod: String {
+    case GET
 }
