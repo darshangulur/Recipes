@@ -5,6 +5,8 @@
 //  Created by Darshan Gulur Srinivasa on 3/4/25.
 //
 
+import Foundation
+
 struct RecipesResponse: Decodable {
     let recipes: [Recipe]
 }
@@ -13,7 +15,7 @@ struct Recipe: Decodable, Identifiable {
     let uuid: String
     let cuisine: String
     let name: String
-    let photoURLSmall: String
+    let photoURLStringSmall: String
     var sourceURL: String?
     var youtubeURL: String?
     
@@ -21,12 +23,16 @@ struct Recipe: Decodable, Identifiable {
         case uuid
         case cuisine
         case name
-        case photoURLSmall = "photo_url_small"
+        case photoURLStringSmall = "photo_url_small"
         case sourceURL = "source_url"
         case youtubeURL = "youtube_url"
     }
     
     var id: String {
         uuid
+    }
+    
+    var photoURLSmall: URL? {
+        URL(string: photoURLStringSmall)
     }
 }
