@@ -8,20 +8,35 @@
 import Foundation
 
 protocol APIClientable {
-    func perform<T: Decodable>(routable: Routable) async -> Result<T, APIError>
+    func execute<T: Decodable>(routable: Routable) async throws -> T
 }
 
 struct APIClient: APIClientable {
-    func perform<T: Decodable>(routable: any Routable) async -> Result<T, APIError> {
+    func execute<T: Decodable>(routable: any Routable) async throws -> T {
         var request = URLRequest(url: routable.url)
         request.httpMethod = routable.httpMethod.rawValue
         
+        let (data, response): (Data, URLResponse)
         do {
-            let (data, response) = try await URLSession.shared.data(for: request)
+            (data, response) = try await URLSession.shared.data(for: request)
         } catch {
-            
+            throw APIError.badURL
         }
         
-        return .failure(APIError.network)
+        guard
+            let httpResponse = response as? HTTPURLResponse,
+            (200...299).contains(httpResponse.statusCode)
+        else {
+            throw APIError.network
+        }
+        
+        let value: T
+        do {
+            value = try JSONDecoder().decode(T.self, from: data)
+        } catch {
+            throw APIError.parsing
+        }
+        
+        return value
     }
 }
