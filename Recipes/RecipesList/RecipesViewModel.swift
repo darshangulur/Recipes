@@ -11,8 +11,10 @@ protocol RecipesViewModelable: ObservableObject {
     var recipes: [Recipe] { get }
     var selectedCuisine: String { get }
     var error: String? { get }
+    var cuisines: Set<String> { get }
     
     func fetchRecipes()
+    func didSelectCuisineFilter(cuisine: String)
 }
 
 final class RecipesViewModel: RecipesViewModelable {
@@ -21,9 +23,11 @@ final class RecipesViewModel: RecipesViewModelable {
     }
     
     // MARK: Published vars
+    private var allRecipes = [Recipe]()
     @Published private(set) var recipes = [Recipe]()
     @Published private(set) var selectedCuisine: String = Constants.allCuisine
     @Published private(set) var error: String?
+    @Published private(set) var cuisines = Set<String>()
     
     // MARK: Private vars
     private let dataModel: RecipesDataModelable
@@ -45,12 +49,14 @@ final class RecipesViewModel: RecipesViewModelable {
                     
                     if self.selectedCuisine == Constants.allCuisine {
                         self.recipes = recipes // show all recipes
-                    } else {
-                        // filter recipes to show only the selected cuisine
-                        let filteredRecipes = recipes.filter { recipe in
-                            recipe.cuisine == self.selectedCuisine
+                        self.allRecipes = recipes
+                        
+                        self.cuisines.insert(Constants.allCuisine)
+                        recipes.forEach {
+                            self.cuisines.insert($0.cuisine)
                         }
-                        self.recipes = filteredRecipes
+                    } else {
+                        loadRecipes(forCuisine: self.selectedCuisine)
                     }
                 }
             } catch {
@@ -58,6 +64,26 @@ final class RecipesViewModel: RecipesViewModelable {
                     self.error = "Unable to load data. Please try again later."
                 }
             }
+        }
+    }
+    
+    func didSelectCuisineFilter(cuisine: String) {
+        selectedCuisine = cuisine
+        loadRecipes(forCuisine: cuisine)
+    }
+}
+
+// MARK: Private Helpers
+private extension RecipesViewModel {
+    func loadRecipes(forCuisine cuisine: String) {
+        if self.selectedCuisine == Constants.allCuisine {
+            self.recipes = self.allRecipes
+        } else {
+            // filter recipes to show only the selected cuisine
+            let filteredRecipes = allRecipes.filter { recipe in
+                recipe.cuisine == cuisine
+            }
+            self.recipes = filteredRecipes
         }
     }
 }
