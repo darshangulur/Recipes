@@ -8,8 +8,14 @@
 import Foundation
 
 protocol Routable {
-    var url: URL { get }
+    var urlString: String { get }
     var httpMethod: HTTPMethod { get }
+}
+
+extension Routable {
+    var url: URL? {
+        URL(string: urlString)
+    }
 }
 
 enum HTTPMethod: String {

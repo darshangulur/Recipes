@@ -13,21 +13,25 @@ protocol APIClientable {
 
 struct APIClient: APIClientable {
     func execute<T: Decodable>(routable: any Routable) async throws -> T {
-        var request = URLRequest(url: routable.url)
+        guard let url = routable.url else {
+            throw APIError.badURL
+        }
+        
+        var request = URLRequest(url: url)
         request.httpMethod = routable.httpMethod.rawValue
         
         let (data, response): (Data, URLResponse)
         do {
             (data, response) = try await URLSession.shared.data(for: request)
         } catch {
-            throw APIError.badURL
+            throw APIError.request
         }
         
         guard
             let httpResponse = response as? HTTPURLResponse,
-            (200...299).contains(httpResponse.statusCode)
+            (200...299).contains(httpResponse.statusCode) // HTTP success status code range check
         else {
-            throw APIError.network
+            throw APIError.httpError
         }
         
         let value: T

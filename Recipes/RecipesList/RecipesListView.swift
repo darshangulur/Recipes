@@ -7,18 +7,30 @@
 
 import SwiftUI
 
-struct ContentView: View {
+struct ContentView<ViewModel: RecipesViewModelable>: View {
+    @ObservedObject private(set) var viewModel: ViewModel
+    
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("God's Great!")
+        ScrollView(showsIndicators: false) {
+            VStack {
+                ForEach(viewModel.recipes) { recipe in
+                    Text(recipe.name)
+                        .foregroundStyle(Color.black)
+                }
+            }
         }
-        .padding()
+        .onAppear {
+            viewModel.fetchRecipes()
+        }
     }
 }
 
 #Preview {
-    ContentView()
+    ContentView(
+        viewModel: RecipesViewModel(
+            dataModel: RecipesDataModel(
+                apiClient: APIClient()
+            )
+        )
+    )
 }
