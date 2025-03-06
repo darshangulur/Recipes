@@ -72,20 +72,31 @@ struct ContentView<ViewModel: RecipesViewModelable>: View {
     
     var listView: some View {
         ScrollView(showsIndicators: false) {
-            LazyVStack(alignment: .leading) { // creates rows only as needed
-                ForEach(viewModel.recipes) { recipe in
-                    VStack(alignment: .leading) {
-                        HStack(alignment: .top, spacing: constants.sectionPadding) {
-                            thumbnail(forRecipe: recipe)
-                            
-                            textContent(recipe: recipe)
+            if viewModel.recipes.isEmpty {
+                Text(
+                    "Unable to load recipes.\nPull down to refresh or please check back later."
+                )
+                .multilineTextAlignment(.center)
+                .padding(.top, constants.errorTopPadding)
+            } else {
+                    LazyVStack(alignment: .leading) { // creates rows only as needed
+                        ForEach(viewModel.recipes) { recipe in
+                            VStack(alignment: .leading) {
+                                HStack(alignment: .top, spacing: constants.sectionPadding) {
+                                    thumbnail(forRecipe: recipe)
+                                    
+                                    textContent(recipe: recipe)
+                                }
+                                .padding()
+                                
+                                divider
+                            }
                         }
-                        .padding()
-                        
-                        divider
                     }
-                }
             }
+        }
+        .refreshable {
+            viewModel.fetchRecipes()
         }
     }
     
@@ -149,15 +160,20 @@ struct ContentView<ViewModel: RecipesViewModelable>: View {
         let imageDimension: CGFloat = 100
         let imageCornerRadius: CGFloat = 8.0
         let placeholderImageName = "photo.fill"
+        
         let dividerColor = Color("DividerColor")
         let dividerHeight: CGFloat = 1.0
+        
         let sectionPadding: CGFloat = 10.0
+        
         let filterInterSpacing: CGFloat = 12.0
         let filterContentPadding: CGFloat = 10.0
         let filterBackgroundOpacity: CGFloat = 0.2
         let filterSectionHeight: CGFloat = 50.0
         let filterGridMinimum: CGFloat = 30.0
         let filterGridMaximum: CGFloat = 100.0
+        
+        let errorTopPadding: CGFloat = 100.0
     }
 }
 
