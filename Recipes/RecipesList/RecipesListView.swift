@@ -12,19 +12,34 @@ struct ContentView<ViewModel: RecipesViewModelable>: View {
     @ObservedObject private(set) var viewModel: ViewModel
     
     var body: some View {
-        VStack {
-            filterView
-            
-            listView
+        NavigationStack {
+            VStack {
+                filterView
+                
+                listView
+            }
+            .navigationTitle(Text("Recipes"))
+            .navigationBarTitleDisplayMode(.inline)
         }
         .onAppear {
             viewModel.fetchRecipes()
         }
     }
     
+    @ViewBuilder
     var filterView: some View {
+        let rows = (0...1) // 2 rows
+            .map { _ in
+                GridItem(
+                    .adaptive(
+                        minimum: constants.filterGridMinimum,
+                        maximum: constants.filterGridMaximum
+                    )
+                )
+            }
+        
         ScrollView(.horizontal, showsIndicators: false) {
-            LazyHStack(spacing: constants.filterInterSpacing) {
+            LazyHGrid(rows: rows, spacing: constants.filterInterSpacing) {
                 ForEach(viewModel.cuisines.sorted(), id: \.self) { cuisine in
                     Button(action: {
                         guard cuisine != viewModel.selectedCuisine else {
@@ -51,8 +66,8 @@ struct ContentView<ViewModel: RecipesViewModelable>: View {
                 }
             }
             .padding(.horizontal)
-            .frame(height: constants.filterSectionHeight)
         }
+        .frame(height: CGFloat(rows.count) * constants.filterSectionHeight)
     }
     
     var listView: some View {
@@ -141,6 +156,8 @@ struct ContentView<ViewModel: RecipesViewModelable>: View {
         let filterContentPadding: CGFloat = 10.0
         let filterBackgroundOpacity: CGFloat = 0.2
         let filterSectionHeight: CGFloat = 50.0
+        let filterGridMinimum: CGFloat = 30.0
+        let filterGridMaximum: CGFloat = 100.0
     }
 }
 
