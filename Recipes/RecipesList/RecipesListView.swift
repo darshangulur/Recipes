@@ -100,28 +100,11 @@ struct ContentView<ViewModel: RecipesViewModelable>: View {
         }
     }
     
+    @ViewBuilder
     func thumbnail(forRecipe recipe: Recipe) -> some View {
-        AsyncImage(
-            url: recipe.photoURLSmall,
-            content: { image in
-                image
-                    .resizable()
-                    .frame(
-                        width: constants.imageDimension,
-                        height: constants.imageDimension
-                    )
-                    .clipShape(.rect(cornerRadius: constants.imageCornerRadius))
-            },
-            placeholder: {
-                Image(systemName: constants.placeholderImageName)
-                    .resizable()
-                    .frame(
-                        width: constants.imageDimension,
-                        height: constants.imageDimension
-                    )
-                    .foregroundStyle(Color.gray)
-            }
-        )
+        if let url = recipe.photoURLSmall {
+            CachedAsyncImage(url: url)
+        }
     }
     
     func textContent(recipe: Recipe) -> some View {
