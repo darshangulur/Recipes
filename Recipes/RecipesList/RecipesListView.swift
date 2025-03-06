@@ -36,12 +36,16 @@ struct ContentView<ViewModel: RecipesViewModelable>: View {
                         )
                     }) {
                         Text(cuisine)
-                            .padding(.horizontal, constants.filterContentPadding)
-                            .padding(.vertical, constants.filterContentPadding)
+                            .padding(.all, constants.filterContentPadding)
                             .background(
-                                Color.blue.opacity(constants.filterBackgroundOpacity)
+                                filterBackgroundColor(forCuisine: cuisine)
                             )
-                            .foregroundColor(.blue)
+                            .foregroundColor(
+                                filterForegroundColor(forCuisine: cuisine)
+                            )
+                            .fontWeight(
+                                filterFontWeight(forCuisine: cuisine)
+                            )
                             .clipShape(Capsule())
                     }
                 }
@@ -110,6 +114,20 @@ struct ContentView<ViewModel: RecipesViewModelable>: View {
             .frame(height: constants.dividerHeight)
             .background(constants.dividerColor)
             .padding(.leading)
+    }
+    
+    func filterBackgroundColor(forCuisine cuisine: String) -> Color {
+        viewModel.selectedCuisine == cuisine
+        ? Color.blue
+        : Color.blue.opacity(constants.filterBackgroundOpacity)
+    }
+    
+    func filterForegroundColor(forCuisine cuisine: String) -> Color {
+        viewModel.selectedCuisine == cuisine ? .white : .blue
+    }
+    
+    func filterFontWeight(forCuisine cuisine: String) -> Font.Weight {
+        viewModel.selectedCuisine == cuisine ? .bold : .regular
     }
     
     struct Constants {
