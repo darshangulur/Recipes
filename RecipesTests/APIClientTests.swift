@@ -11,8 +11,8 @@ import Testing
 struct APIClientTests {
     private let apiClient: APIClientable = APIClient()
     
-    @Test("Fetch Recipes Success", .tags(.liveData))
-    func fetchRecipesSuccess() async throws {
+    @Test("Fetch Data Success", .tags(.liveData))
+    func fetchDataSuccess() async throws {
         let routable: Routable = RecipeRoutable.getRecipes
         let recipesResponse: RecipesResponse? = try? await apiClient.execute(routable: routable)
         let recipes = recipesResponse?.recipes
@@ -25,15 +25,15 @@ struct APIClientTests {
     }
     
     @Test(
-        "Fetch Recipes Failure",
-        .tags(.mockData),
+        "Fetch Data Failure",
+        .tags(.liveData),
         arguments: [
             ErrorRoutable.badURL,
             ErrorRoutable.badRequest,
             ErrorRoutable.malformedData
         ]
     )
-    private func fetchRecipesFailure(routable: ErrorRoutable) async throws {
+    func fetchDataFailure(routable: ErrorRoutable) async throws {
         let responses: [ErrorRoutable: APIError] = [
             .badURL: .badURL,
             .badRequest: .request,
@@ -45,28 +45,5 @@ struct APIClientTests {
         } catch {
             #expect((error as? APIError) == responses[routable])
         }
-    }
-}
-
-private enum ErrorRoutable: Routable {
-    case badURL
-    case badRequest
-    case malformedData
-    
-    var urlString: String {
-        switch self {
-        case .badURL:
-            ""
-            
-        case .badRequest:
-            "dhhwjhdwdhk.dhdwkdjkj"
-            
-        case .malformedData:
-            "https://d3jbb8n5wk0qxi.cloudfront.net/recipes-malformed.json"
-        }
-    }
-    
-    var httpMethod: Recipes.HTTPMethod {
-        .GET
     }
 }
