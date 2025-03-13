@@ -13,7 +13,7 @@ struct ContentView<ViewModel: RecipesViewModelable>: View {
     
     var body: some View {
         NavigationStack {
-            VStack {
+            VStack(spacing: 0) {
                 filterView
                 
                 listView
@@ -49,40 +49,45 @@ struct ContentView<ViewModel: RecipesViewModelable>: View {
                     .adaptive(
                         minimum: constants.filterGridMinimum,
                         maximum: constants.filterGridMaximum
-                    )
+                    ),
+                    spacing: 0
                 )
             }
         
-        ScrollView(.horizontal, showsIndicators: false) {
-            LazyHGrid(rows: rows, spacing: constants.filterInterSpacing) {
-                ForEach(viewModel.cuisines.sorted(), id: \.self) { cuisine in
-                    Button(action: {
-                        guard cuisine != viewModel.selectedCuisine else {
-                            return
+        VStack {
+            ScrollView(.horizontal, showsIndicators: false) {
+                LazyHGrid(rows: rows, spacing: constants.filterInterSpacing) {
+                    ForEach(viewModel.cuisines.sorted(), id: \.self) { cuisine in
+                        Button(action: {
+                            guard cuisine != viewModel.selectedCuisine else {
+                                return
+                            }
+                            
+                            viewModel.didSelectCuisineFilter(
+                                cuisine: cuisine
+                            )
+                        }) {
+                            Text(cuisine)
+                                .padding(.all, constants.filterContentPadding)
+                                .background(
+                                    filterBackgroundColor(forCuisine: cuisine)
+                                )
+                                .foregroundColor(
+                                    filterForegroundColor(forCuisine: cuisine)
+                                )
+                                .fontWeight(
+                                    filterFontWeight(forCuisine: cuisine)
+                                )
+                                .clipShape(Capsule())
                         }
-                        
-                        viewModel.didSelectCuisineFilter(
-                            cuisine: cuisine
-                        )
-                    }) {
-                        Text(cuisine)
-                            .padding(.all, constants.filterContentPadding)
-                            .background(
-                                filterBackgroundColor(forCuisine: cuisine)
-                            )
-                            .foregroundColor(
-                                filterForegroundColor(forCuisine: cuisine)
-                            )
-                            .fontWeight(
-                                filterFontWeight(forCuisine: cuisine)
-                            )
-                            .clipShape(Capsule())
                     }
                 }
+                .padding(.horizontal)
             }
-            .padding(.horizontal)
+            .frame(height: CGFloat(rows.count) * constants.filterSectionHeight)
+            
+            divider
         }
-        .frame(height: CGFloat(rows.count) * constants.filterSectionHeight)
     }
     
     var listView: some View {
@@ -105,6 +110,7 @@ struct ContentView<ViewModel: RecipesViewModelable>: View {
                                 .padding()
                                 
                                 divider
+                                    .padding(.leading)
                             }
                         }
                     }
@@ -137,7 +143,6 @@ struct ContentView<ViewModel: RecipesViewModelable>: View {
         Divider()
             .frame(height: constants.dividerHeight)
             .background(constants.dividerColor)
-            .padding(.leading)
     }
     
     func filterBackgroundColor(forCuisine cuisine: String) -> Color {
@@ -167,7 +172,7 @@ struct ContentView<ViewModel: RecipesViewModelable>: View {
         let filterInterSpacing: CGFloat = 12.0
         let filterContentPadding: CGFloat = 10.0
         let filterBackgroundOpacity: CGFloat = 0.2
-        let filterSectionHeight: CGFloat = 50.0
+        let filterSectionHeight: CGFloat = 44.0
         let filterGridMinimum: CGFloat = 30.0
         let filterGridMaximum: CGFloat = 100.0
         
