@@ -12,6 +12,7 @@ protocol RecipesViewModelable: ObservableObject {
     var selectedCuisine: String { get }
     var error: String? { get }
     var cuisines: Set<String> { get }
+    var isAllFilterSelected: Bool { get }
     
     func fetchRecipes()
     func didSelectAllFilter()
@@ -62,6 +63,10 @@ final class RecipesViewModel: RecipesViewModelable {
                 }
             }
         }
+    }
+    
+    var isAllFilterSelected: Bool {
+        selectedCuisine == Constants.allCuisine
     }
     
     func didSelectAllFilter() {

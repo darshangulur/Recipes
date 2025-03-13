@@ -28,6 +28,9 @@ struct ContentView<ViewModel: RecipesViewModelable>: View {
                         },
                         label: {
                             Text("Show All")
+                                .fontWeight(
+                                    viewModel.isAllFilterSelected ? .bold : .regular
+                                )
                         }
                     )
                 }
