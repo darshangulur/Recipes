@@ -15,7 +15,7 @@ struct Recipe: Decodable, Identifiable {
     let uuid: String
     let cuisine: String
     let name: String
-    let photoURLStringSmall: String
+    let photoURLStringSmall: String?
     var sourceURL: String?
     var youtubeURL: String?
     
@@ -33,6 +33,10 @@ struct Recipe: Decodable, Identifiable {
     }
     
     var photoURLSmall: URL? {
-        URL(string: photoURLStringSmall)
+        guard let urlString = photoURLStringSmall else {
+            return nil
+        }
+
+        return URL(string: urlString)
     }
 }
