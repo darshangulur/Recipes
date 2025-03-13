@@ -32,6 +32,7 @@ struct APIClientTests {
         arguments: [
             ErrorRoutable.badURL,
             ErrorRoutable.badRequest,
+            ErrorRoutable.httpError,
             ErrorRoutable.malformedData
         ]
     )
@@ -39,6 +40,7 @@ struct APIClientTests {
         let responses: [ErrorRoutable: APIError] = [
             .badURL: .badURL,
             .badRequest: .request,
+            .httpError: .httpError,
             .malformedData: .parsing
         ]
         

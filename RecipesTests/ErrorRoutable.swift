@@ -10,6 +10,7 @@
 enum ErrorRoutable: Routable {
     case badURL
     case badRequest
+    case httpError
     case malformedData
     case recipesOptionalDataRemoved
     
@@ -20,6 +21,9 @@ enum ErrorRoutable: Routable {
             
         case .badRequest:
             "dhhwjhdwdhk.dhdwkdjkj"
+            
+        case .httpError:
+            "https://d3jbb8n5wk0qxi.cloudfront.net/recipes-malformed.json/c/123"
             
         case .malformedData:
             "https://d3jbb8n5wk0qxi.cloudfront.net/recipes-malformed.json"
