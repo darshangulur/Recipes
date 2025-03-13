@@ -14,6 +14,7 @@ protocol RecipesViewModelable: ObservableObject {
     var cuisines: Set<String> { get }
     
     func fetchRecipes()
+    func didSelectAllFilter()
     func didSelectCuisineFilter(cuisine: String)
 }
 
@@ -42,22 +43,18 @@ final class RecipesViewModel: RecipesViewModelable {
             do {
                 let recipes = try await dataModel.fetchRecipes()
                 
-                DispatchQueue.main.async { [weak self, recipes] in // switch to main thread before updating UI
+                // switch to main thread before updating UI
+                DispatchQueue.main.async { [weak self, recipes] in
                     guard let self else {
                         return
                     }
                     
-                    if self.selectedCuisine == Constants.allCuisine {
-                        self.recipes = recipes // show all recipes
-                        self.allRecipes = recipes
-                        
-                        self.cuisines.insert(Constants.allCuisine)
-                        recipes.forEach {
-                            self.cuisines.insert($0.cuisine)
-                        }
-                    } else {
-                        loadRecipes(forCuisine: self.selectedCuisine)
+                    self.allRecipes = recipes
+                    recipes.forEach {
+                        self.cuisines.insert($0.cuisine)
                     }
+                    
+                    loadRecipes(forCuisine: self.selectedCuisine)
                 }
             } catch {
                 DispatchQueue.main.async {
@@ -65,6 +62,10 @@ final class RecipesViewModel: RecipesViewModelable {
                 }
             }
         }
+    }
+    
+    func didSelectAllFilter() {
+        didSelectCuisineFilter(cuisine: Constants.allCuisine)
     }
     
     func didSelectCuisineFilter(cuisine: String) {

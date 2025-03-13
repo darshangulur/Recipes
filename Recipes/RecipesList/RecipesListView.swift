@@ -20,6 +20,18 @@ struct ContentView<ViewModel: RecipesViewModelable>: View {
             }
             .navigationTitle(Text("Recipes"))
             .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button(
+                        action: {
+                            viewModel.didSelectAllFilter()
+                        },
+                        label: {
+                            Text("Show All")
+                        }
+                    )
+                }
+            }
         }
         .onAppear {
             viewModel.fetchRecipes()
@@ -71,7 +83,7 @@ struct ContentView<ViewModel: RecipesViewModelable>: View {
     }
     
     var listView: some View {
-        ScrollView(showsIndicators: false) {
+        ScrollView {
             if viewModel.recipes.isEmpty {
                 Text(
                     "Unable to load recipes.\nPull down to refresh or please check back later."

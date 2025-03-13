@@ -5,11 +5,10 @@
 //  Created by Darshan Gulur Srinivasa on 3/5/25.
 //
 
-import SwiftUI
+import Foundation
+import UIKit
 
 final class ImageCacheManager {
-    static let shared = ImageCacheManager()
-    
     private let cache = URLCache.shared
 
     func loadImage(from url: URL) async -> UIImage? {
@@ -26,7 +25,7 @@ final class ImageCacheManager {
             let (data, response) = try await URLSession.shared.data(for: request)
             
             guard let httpResponse = response as? HTTPURLResponse,
-                  httpResponse.statusCode == 200,
+                  httpResponse.isSuccess,
                   let image = UIImage(data: data) else {
                 return nil
             }

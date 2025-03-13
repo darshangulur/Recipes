@@ -29,7 +29,7 @@ struct APIClient: APIClientable {
         
         guard
             let httpResponse = response as? HTTPURLResponse,
-            (200...299).contains(httpResponse.statusCode) // HTTP success status code range check
+            httpResponse.isSuccess
         else {
             throw APIError.httpError
         }

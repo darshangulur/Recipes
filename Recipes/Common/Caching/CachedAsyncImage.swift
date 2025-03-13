@@ -9,6 +9,7 @@ import SwiftUI
 
 struct CachedAsyncImage: View {
     @State private var image: UIImage?
+    private let cacheManager = ImageCacheManager()
     
     let url: URL
     init(url: URL, imageDimension: CGFloat = Constants.imageDimension) {
@@ -27,7 +28,7 @@ struct CachedAsyncImage: View {
         } else {
             ProgressView()
                 .task {
-                    image = await ImageCacheManager.shared.loadImage(
+                    image = await cacheManager.loadImage(
                         from: url
                     ) ?? UIImage(named: Constants.placeholderImageName)
                 }
