@@ -1,0 +1,14 @@
+{
+    "recipes": [
+        {
+            "cuisine": "Malaysian",
+            "name": "Apam Balik",
+            "uuid": "0c6ca6e7-e32a-4053-b824-1dbf749910d8",
+        },
+        {
+            "cuisine": "British",
+            "name": "Apple & Blackberry Crumble",
+            "uuid": "599344f4-3c5c-4cca-b914-2210e3b3312f",
+        }
+    ]
+}

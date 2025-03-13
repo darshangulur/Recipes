@@ -22,6 +22,8 @@ struct APIClientTests {
         
         let malaysianRecipes = recipes?.filter { $0.cuisine == "Malaysian" }
         #expect(malaysianRecipes?.count == 2)
+        
+        #expect(recipes?.first?.photoURLSmall != nil)
     }
     
     @Test(
@@ -45,5 +47,17 @@ struct APIClientTests {
         } catch {
             #expect((error as? APIError) == responses[routable])
         }
+    }
+    
+    @Test("Fetch Data Success, no optional data", .tags(.liveData))
+    func fetchDataSuccess_noOptionalData() async throws {
+        let routable: Routable = ErrorRoutable.recipesOptionalDataRemoved
+        let recipesResponse: RecipesResponse? = try? await MockAPIClient().execute(routable: routable)
+        let recipes = recipesResponse?.recipes
+        
+        #expect(recipes?.isEmpty == false)
+        #expect(recipes?.count == 2)
+        
+        #expect(recipes?.first?.photoURLSmall == nil)
     }
 }

@@ -11,6 +11,7 @@ enum ErrorRoutable: Routable {
     case badURL
     case badRequest
     case malformedData
+    case recipesOptionalDataRemoved
     
     var urlString: String {
         switch self {
@@ -22,6 +23,9 @@ enum ErrorRoutable: Routable {
             
         case .malformedData:
             "https://d3jbb8n5wk0qxi.cloudfront.net/recipes-malformed.json"
+            
+        case .recipesOptionalDataRemoved:
+            "RecipesOptionalDataRemoved"
         }
     }
     
