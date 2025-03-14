@@ -8,13 +8,27 @@
 import Foundation
 
 extension HTTPURLResponse {
+    static var successStatusCodeRange: ClosedRange<Int> {
+        (200...299)
+    }
+    
     var isSuccess: Bool {
-        (200...299).contains(statusCode) // HTTP success status code range check
+        HTTPURLResponse.successStatusCodeRange.contains(statusCode)
     }
 }
 
 extension String {
     var nsString: NSString {
         NSString(string: self)
+    }
+}
+
+extension String? {
+    var url: URL? {
+        guard let urlString = self else {
+            return nil
+        }
+        
+        return URL(string: urlString)
     }
 }

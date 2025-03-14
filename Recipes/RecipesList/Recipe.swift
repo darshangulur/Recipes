@@ -15,28 +15,20 @@ struct Recipe: Decodable, Identifiable {
     let uuid: String
     let cuisine: String
     let name: String
-    let photoURLStringSmall: String?
-    var sourceURL: String?
-    var youtubeURL: String?
+    let smallPhotoURLString: String?
+    var sourceURLString: String?
+    var youtubeURLString: String?
     
     enum CodingKeys: String, CodingKey {
         case uuid
         case cuisine
         case name
-        case photoURLStringSmall = "photo_url_small"
-        case sourceURL = "source_url"
-        case youtubeURL = "youtube_url"
+        case smallPhotoURLString = "photo_url_small"
+        case sourceURLString = "source_url"
+        case youtubeURLString = "youtube_url"
     }
     
     var id: String {
         uuid
-    }
-    
-    var photoURLSmall: URL? {
-        guard let urlString = photoURLStringSmall else {
-            return nil
-        }
-
-        return URL(string: urlString)
     }
 }

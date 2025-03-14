@@ -23,7 +23,7 @@ struct APIClientTests {
         let malaysianRecipes = recipes?.filter { $0.cuisine == "Malaysian" }
         #expect(malaysianRecipes?.count == 2)
         
-        #expect(recipes?.first?.photoURLSmall != nil)
+        #expect(recipes?.first?.smallPhotoURLString != nil)
     }
     
     @Test(
@@ -60,6 +60,6 @@ struct APIClientTests {
         #expect(recipes?.isEmpty == false)
         #expect(recipes?.count == 2)
         
-        #expect(recipes?.first?.photoURLSmall == nil)
+        #expect(recipes?.first?.smallPhotoURLString == nil)
     }
 }

@@ -99,9 +99,15 @@ struct ContentView: View {
             if viewModel.isLoading, viewModel.recipes.isEmpty {
                 ProgressView()
             } else if viewModel.recipes.isEmpty {
-                Text(
-                    "Unable to load recipes.\nPull down to refresh or please check back later."
-                )
+                Group {
+                    if let error = viewModel.error {
+                        Text(error)
+                    } else {
+                        Text(
+                            "Unable to load recipes.\nPull down to refresh or please check back later."
+                        )
+                    }
+                }
                 .multilineTextAlignment(.center)
                 .padding(.top, constants.errorTopPadding)
             } else {
@@ -131,19 +137,49 @@ struct ContentView: View {
     
     @ViewBuilder
     func thumbnail(forRecipe recipe: Recipe) -> some View {
-        if let url = recipe.photoURLSmall {
+        if let url = recipe.smallPhotoURLString.url {
             CachedAsyncImage(url: url)
         }
     }
     
     func textContent(recipe: Recipe) -> some View {
-        VStack(alignment: .leading) {
-            Text(recipe.name)
-                .font(.title3)
+        VStack(
+            alignment: .leading,
+            spacing: constants.textContentSectionPadding
+        ) {
+            VStack(alignment: .leading) {
+                Text(recipe.name)
+                    .font(.title3)
+                
+                Text(recipe.cuisine)
+                    .font(.body)
+                    .foregroundStyle(Color.gray)
+            }
             
-            Text(recipe.cuisine)
-                .font(.body)
-                .foregroundStyle(Color.gray)
+            HStack(spacing: constants.linkHorizontalSpacing) {
+                let youtubeURL = recipe.youtubeURLString.url
+                let sourceURL = recipe.sourceURLString.url
+                
+                if let url = youtubeURL {
+                    Link(
+                        "YouTube",
+                        destination: url
+                    )
+                }
+                
+                if youtubeURL != nil
+                    && sourceURL != nil
+                {
+                    Text("|")
+                }
+                
+                if let url = sourceURL {
+                    Link(
+                        "Source",
+                        destination: url
+                    )
+                }
+            }
         }
     }
     
@@ -171,6 +207,9 @@ struct ContentView: View {
         let imageDimension: CGFloat = 100
         let imageCornerRadius: CGFloat = 8.0
         let placeholderImageName = "photo.fill"
+        
+        let textContentSectionPadding: CGFloat = 20.0
+        let linkHorizontalSpacing: CGFloat = 20.0
         
         let dividerColor = Color("DividerColor")
         let dividerHeight: CGFloat = 1.0
