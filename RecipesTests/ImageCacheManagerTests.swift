@@ -15,8 +15,6 @@ struct ImageCacheManagerTests {
     
     @Test("Image Cache Success")
     func imageCacheSuccess() async throws {
-        URLCache.shared.removeAllCachedResponses() // clear cache
-
         let downloadedImage = try await cacheManager.loadImage(from: url)
         #expect(downloadedImage != nil)
         #expect(downloadedImage.size != .zero)

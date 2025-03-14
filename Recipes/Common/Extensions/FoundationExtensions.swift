@@ -12,3 +12,9 @@ extension HTTPURLResponse {
         (200...299).contains(statusCode) // HTTP success status code range check
     }
 }
+
+extension String {
+    var nsString: NSString {
+        NSString(string: self)
+    }
+}

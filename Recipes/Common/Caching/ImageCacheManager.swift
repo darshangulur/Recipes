@@ -9,14 +9,17 @@ import Foundation
 import UIKit
 
 final class ImageCacheManager {
-    private let cache = URLCache.shared
+    private let cache = NSCache<NSString, UIImage>()
 
     func loadImage(from url: URL) async throws -> UIImage {
         let request = URLRequest(url: url)
         
-        // Check if the image is already cached
-        if let cachedResponse = cache.cachedResponse(for: request),
-           let image = UIImage(data: cachedResponse.data) {
+        if
+            // Check if the image is already cached
+            let image = cache.object(
+                forKey: url.absoluteString.nsString
+            )
+        {
             return image
         }
         
@@ -36,9 +39,7 @@ final class ImageCacheManager {
         }
         
         // Cache the image
-        let cachedResponse = CachedURLResponse(response: response, data: data)
-        cache.storeCachedResponse(cachedResponse, for: request)
-        
+        cache.setObject(image, forKey: url.absoluteString.nsString)
         return image
     }
 }
