@@ -36,8 +36,8 @@ struct ContentView<ViewModel: RecipesViewModelable>: View {
                 }
             }
         }
-        .onAppear {
-            viewModel.fetchRecipes()
+        .task {
+            await viewModel.fetchRecipes()
         }
     }
     
@@ -117,7 +117,9 @@ struct ContentView<ViewModel: RecipesViewModelable>: View {
             }
         }
         .refreshable {
-            viewModel.fetchRecipes()
+            Task {
+                await viewModel.fetchRecipes()
+            }
         }
     }
     

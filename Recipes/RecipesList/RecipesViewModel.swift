@@ -14,7 +14,7 @@ protocol RecipesViewModelable: ObservableObject {
     var cuisines: Set<String> { get }
     var isAllFilterSelected: Bool { get }
     
-    func fetchRecipes()
+    func fetchRecipes() async
     func didSelectAllFilter()
     func didSelectCuisineFilter(cuisine: String)
 }
@@ -39,28 +39,26 @@ final class RecipesViewModel: RecipesViewModelable {
         self.dataModel = dataModel
     }
     
-    func fetchRecipes() {
-        Task {
-            do {
-                let recipes = try await dataModel.fetchRecipes()
+    func fetchRecipes() async {
+        do {
+            let recipes = try await dataModel.fetchRecipes(routable: RecipeRoutable.getRecipes)
+            
+            // switch to main thread before updating UI
+            DispatchQueue.main.async { [weak self, recipes] in
+                guard let self else {
+                    return
+                }
                 
-                // switch to main thread before updating UI
-                DispatchQueue.main.async { [weak self, recipes] in
-                    guard let self else {
-                        return
-                    }
-                    
-                    self.allRecipes = recipes
-                    recipes.forEach {
-                        self.cuisines.insert($0.cuisine)
-                    }
-                    
-                    loadRecipes(forCuisine: self.selectedCuisine)
+                self.allRecipes = recipes
+                recipes.forEach {
+                    self.cuisines.insert($0.cuisine)
                 }
-            } catch {
-                DispatchQueue.main.async {
-                    self.error = "Unable to load data. Please try again later."
-                }
+                
+                loadRecipes(forCuisine: self.selectedCuisine)
+            }
+        } catch {
+            DispatchQueue.main.async {
+                self.error = "Unable to load data. Please try again later."
             }
         }
     }

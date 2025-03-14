@@ -8,14 +8,14 @@
 import Foundation
 
 protocol RecipesDataModelable {
-    func fetchRecipes() async throws -> [Recipe]
+    func fetchRecipes(routable: any Routable) async throws -> [Recipe]
 }
 
 struct RecipesDataModel: RecipesDataModelable {
     let apiClient: APIClientable
     
-    func fetchRecipes() async throws -> [Recipe] {
-        let response: RecipesResponse = try await apiClient.execute(routable: RecipeRoutable.getRecipes)
+    func fetchRecipes(routable: any Routable) async throws -> [Recipe] {
+        let response: RecipesResponse = try await apiClient.execute(routable: routable)
         return response.recipes
     }
 }

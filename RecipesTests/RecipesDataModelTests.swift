@@ -9,13 +9,12 @@ import Testing
 @testable import Recipes
 
 struct RecipesDataModelTests {
-    private let apiClient: APIClientable = APIClient()
-    
     @Test("Fetch recipes Success", .tags(.liveData))
     func fetchRecipesSuccess() async throws {
-        let routable: Routable = RecipeRoutable.getRecipes
-        let recipesResponse: RecipesResponse? = try? await apiClient.execute(routable: routable)
-        let recipes = recipesResponse?.recipes
+        let recipes: [Recipe]? = try? await fetchRecipes(
+            apiClient: APIClient(),
+            routable: RecipeRoutable.getRecipes
+        )
         
         #expect(recipes?.isEmpty == false)
     }
@@ -25,13 +24,24 @@ struct RecipesDataModelTests {
         .tags(.liveData),
         arguments: [ErrorRoutable.badURL]
     )
-    private func fetchRecipesFailure(routable: ErrorRoutable) async throws {
+    func fetchRecipesFailure(routable: ErrorRoutable) async throws {
         let responses: [ErrorRoutable: APIError] = [.badURL: .badURL]
         
         do {
-            let _: RecipesResponse? = try await apiClient.execute(routable: routable)
+            let _: [Recipe]? = try await fetchRecipes(
+                apiClient: MockAPIClient(),
+                routable: routable
+            )
         } catch {
             #expect((error as? APIError) == responses[routable])
         }
+    }
+}
+
+// MARK: Helpers
+private extension RecipesDataModelTests {
+    private func fetchRecipes(apiClient: any APIClientable, routable: any Routable) async throws -> [Recipe] {
+        let dataModel: any RecipesDataModelable = RecipesDataModel(apiClient: apiClient)
+        return try await dataModel.fetchRecipes(routable: routable)
     }
 }
