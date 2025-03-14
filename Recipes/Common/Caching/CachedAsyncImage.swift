@@ -28,9 +28,11 @@ struct CachedAsyncImage: View {
         } else {
             ProgressView()
                 .task {
-                    image = await cacheManager.loadImage(
-                        from: url
-                    ) ?? UIImage(named: Constants.placeholderImageName)
+                    do {
+                        image = try await cacheManager.loadImage(from: url)
+                    } catch {
+                        image = UIImage(named: Constants.placeholderImageName)
+                    }
                 }
         }
     }

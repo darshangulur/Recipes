@@ -11,8 +11,11 @@ protocol RecipesDataModelable {
     func fetchRecipes(routable: any Routable) async throws -> [Recipe]
 }
 
-struct RecipesDataModel: RecipesDataModelable {
-    let apiClient: APIClientable
+actor RecipesDataModel: RecipesDataModelable {
+    private let apiClient: APIClientable
+    init(apiClient: APIClientable) {
+        self.apiClient = apiClient
+    }
     
     func fetchRecipes(routable: any Routable) async throws -> [Recipe] {
         let response: RecipesResponse = try await apiClient.execute(routable: routable)

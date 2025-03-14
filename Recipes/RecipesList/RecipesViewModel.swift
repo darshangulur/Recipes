@@ -7,7 +7,8 @@
 
 import Foundation
 
-protocol RecipesViewModelable: ObservableObject {
+protocol RecipesViewModelable: AnyObject {
+    var isLoading: Bool { get }
     var recipes: [Recipe] { get }
     var selectedCuisine: String { get }
     var error: String? { get }
@@ -19,6 +20,7 @@ protocol RecipesViewModelable: ObservableObject {
     func didSelectCuisineFilter(cuisine: String)
 }
 
+@Observable
 final class RecipesViewModel: RecipesViewModelable {
     enum Constants {
         static var allCuisine = "All"
@@ -26,10 +28,11 @@ final class RecipesViewModel: RecipesViewModelable {
     
     // MARK: Published vars
     private var allRecipes = [Recipe]()
-    @Published private(set) var recipes = [Recipe]()
-    @Published private(set) var selectedCuisine: String = Constants.allCuisine
-    @Published private(set) var error: String?
-    @Published private(set) var cuisines = Set<String>()
+    private(set) var isLoading: Bool = false
+    private(set) var recipes = [Recipe]()
+    private(set) var selectedCuisine: String = Constants.allCuisine
+    private(set) var error: String?
+    private(set) var cuisines = Set<String>()
     
     // MARK: Private vars
     private let dataModel: RecipesDataModelable
@@ -40,11 +43,14 @@ final class RecipesViewModel: RecipesViewModelable {
     }
     
     func fetchRecipes() async {
+        isLoading = true
+        error = nil
+        
         do {
             let recipes = try await dataModel.fetchRecipes(routable: RecipeRoutable.getRecipes)
             
             // switch to main thread before updating UI
-            DispatchQueue.main.async { [weak self, recipes] in
+            await MainActor.run { [weak self, recipes] in
                 guard let self else {
                     return
                 }
@@ -55,10 +61,12 @@ final class RecipesViewModel: RecipesViewModelable {
                 }
                 
                 loadRecipes(forCuisine: self.selectedCuisine)
+                self.isLoading = false
             }
         } catch {
-            DispatchQueue.main.async {
+            await MainActor.run {
                 self.error = "Unable to load data. Please try again later."
+                self.isLoading = false
             }
         }
     }

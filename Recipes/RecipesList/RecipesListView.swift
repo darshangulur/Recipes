@@ -7,9 +7,9 @@
 
 import SwiftUI
 
-struct ContentView<ViewModel: RecipesViewModelable>: View {
+struct ContentView: View {
     private let constants = Constants()
-    @ObservedObject private(set) var viewModel: ViewModel
+    let viewModel: any RecipesViewModelable
     
     var body: some View {
         NavigationStack {
@@ -21,18 +21,20 @@ struct ContentView<ViewModel: RecipesViewModelable>: View {
             .navigationTitle(Text("Recipes"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    Button(
-                        action: {
-                            viewModel.didSelectAllFilter()
-                        },
-                        label: {
-                            Text("Show All")
-                                .fontWeight(
-                                    viewModel.isAllFilterSelected ? .bold : .regular
-                                )
-                        }
-                    )
+                if !viewModel.cuisines.isEmpty {
+                    ToolbarItem(placement: .topBarLeading) {
+                        Button(
+                            action: {
+                                viewModel.didSelectAllFilter()
+                            },
+                            label: {
+                                Text("Show All")
+                                    .fontWeight(
+                                        viewModel.isAllFilterSelected ? .bold : .regular
+                                    )
+                            }
+                        )
+                    }
                 }
             }
         }
@@ -54,45 +56,49 @@ struct ContentView<ViewModel: RecipesViewModelable>: View {
                 )
             }
         
-        VStack {
-            ScrollView(.horizontal, showsIndicators: false) {
-                LazyHGrid(rows: rows, spacing: constants.filterInterSpacing) {
-                    ForEach(viewModel.cuisines.sorted(), id: \.self) { cuisine in
-                        Button(action: {
-                            guard cuisine != viewModel.selectedCuisine else {
-                                return
+        if !viewModel.cuisines.isEmpty {
+            VStack {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    LazyHGrid(rows: rows, spacing: constants.filterInterSpacing) {
+                        ForEach(viewModel.cuisines.sorted(), id: \.self) { cuisine in
+                            Button(action: {
+                                guard cuisine != viewModel.selectedCuisine else {
+                                    return
+                                }
+                                
+                                viewModel.didSelectCuisineFilter(
+                                    cuisine: cuisine
+                                )
+                            }) {
+                                Text(cuisine)
+                                    .padding(.all, constants.filterContentPadding)
+                                    .background(
+                                        filterBackgroundColor(forCuisine: cuisine)
+                                    )
+                                    .foregroundColor(
+                                        filterForegroundColor(forCuisine: cuisine)
+                                    )
+                                    .fontWeight(
+                                        filterFontWeight(forCuisine: cuisine)
+                                    )
+                                    .clipShape(Capsule())
                             }
-                            
-                            viewModel.didSelectCuisineFilter(
-                                cuisine: cuisine
-                            )
-                        }) {
-                            Text(cuisine)
-                                .padding(.all, constants.filterContentPadding)
-                                .background(
-                                    filterBackgroundColor(forCuisine: cuisine)
-                                )
-                                .foregroundColor(
-                                    filterForegroundColor(forCuisine: cuisine)
-                                )
-                                .fontWeight(
-                                    filterFontWeight(forCuisine: cuisine)
-                                )
-                                .clipShape(Capsule())
                         }
                     }
+                    .padding(.horizontal)
                 }
-                .padding(.horizontal)
+                .frame(height: CGFloat(rows.count) * constants.filterSectionHeight)
+                
+                divider
             }
-            .frame(height: CGFloat(rows.count) * constants.filterSectionHeight)
-            
-            divider
         }
     }
     
     var listView: some View {
         ScrollView {
-            if viewModel.recipes.isEmpty {
+            if viewModel.isLoading, viewModel.recipes.isEmpty {
+                ProgressView()
+            } else if viewModel.recipes.isEmpty {
                 Text(
                     "Unable to load recipes.\nPull down to refresh or please check back later."
                 )
