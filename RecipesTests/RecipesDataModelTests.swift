@@ -36,6 +36,23 @@ struct RecipesDataModelTests {
             #expect((error as? APIError) == responses[routable])
         }
     }
+    
+    @Test(
+        "Fetch Recipes Success, but empty",
+        .tags(.liveData),
+        arguments: [ErrorRoutable.empty]
+    )
+    func fetchRecipesSuccessButEmpty(routable: ErrorRoutable) async throws {
+        do {
+            let recipes: [Recipe]? = try await fetchRecipes(
+                apiClient: APIClient(),
+                routable: routable
+            )
+            #expect(recipes?.isEmpty == true)
+        } catch {
+            #expect(error == nil)
+        }
+    }
 }
 
 // MARK: Helpers

@@ -65,7 +65,7 @@ final class RecipesViewModel: RecipesViewModelable {
             }
         } catch {
             await MainActor.run {
-                self.error = "Unable to load data. Please try again later."
+                self.error = "Unable to load Recipes. Please try again later."
                 self.isLoading = false
             }
         }
@@ -96,6 +96,10 @@ private extension RecipesViewModel {
                 recipe.cuisine == cuisine
             }
             self.recipes = filteredRecipes
+        }
+        
+        if self.recipes.isEmpty {
+            self.error = "No recipes are available."
         }
     }
 }
