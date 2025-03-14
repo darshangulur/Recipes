@@ -4,15 +4,15 @@
 [Demo Video](https://drive.google.com/file/d/1DEjXeiFC_dYhyCPziOpHRHacofihaAFv/view?usp=share_link)
 
 - Lists all the recipes from the given API source
-- Filter Recipes by Cuisine using the stacked buttons at the top of the screen
-- Tap on YouTube or Source links on each of the Recipe\'s for detailed info about the recipe
-- The implementation follows MVVM design pattern.
+- Allows user to filter Recipes by Cuisine using the stacked buttons at the top of the screen
+- Allows user to Tap on YouTube or Source links on each of the Recipe for a detailed info about the recipe
 - Caches Images using `NSCache`
+- The implementation follows MVVM design pattern
 - Has a code coverage of 93%, that covers Network, Data Model and View Model layers.
 - Potential Future Updates
     - Detail page for the Recipe with an embedded video and other meta data
-    - Favorite feature to favorite a Recipe and introduce a filter button for filtering just favorites
-    - For scalability, improvise backend API to Paginate using index and count URL Query params
+    - Favorite feature to favorite a Recipe and introduce a filter button for filtering just the favorites
+    - For scalability, improvise backend API to support Pagination using index and count URL Query params
     - Add Snapshot tests to the UI layer - making it easy to test,
         - Scalability for various form factors
         - Localization support
