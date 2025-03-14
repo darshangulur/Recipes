@@ -23,7 +23,9 @@ protocol RecipesViewModelable: AnyObject {
 @Observable
 final class RecipesViewModel: RecipesViewModelable {
     enum Constants {
-        static var allCuisine = "All"
+        static let allCuisine = "All"
+        static let genericError = "Unable to load Recipes. Please try again later."
+        static let emptyRecipesError = "No recipes are available."
     }
     
     // MARK: Published vars
@@ -43,11 +45,16 @@ final class RecipesViewModel: RecipesViewModelable {
     }
     
     func fetchRecipes() async {
+        await fetchRecipes(routable: RecipeRoutable.getRecipes)
+    }
+    
+    // Added this just to provide flexibility for Unit Testing layers to inject `Routable`
+    func fetchRecipes(routable: any Routable) async {
         isLoading = true
         error = nil
         
         do {
-            let recipes = try await dataModel.fetchRecipes(routable: RecipeRoutable.getRecipes)
+            let recipes = try await dataModel.fetchRecipes(routable: routable)
             
             // switch to main thread before updating UI
             await MainActor.run { [weak self, recipes] in
@@ -65,7 +72,7 @@ final class RecipesViewModel: RecipesViewModelable {
             }
         } catch {
             await MainActor.run {
-                self.error = "Unable to load Recipes. Please try again later."
+                self.error = Constants.genericError
                 self.isLoading = false
             }
         }
@@ -99,7 +106,7 @@ private extension RecipesViewModel {
         }
         
         if self.recipes.isEmpty {
-            self.error = "No recipes are available."
+            self.error = Constants.emptyRecipesError
         }
     }
 }

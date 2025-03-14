@@ -19,7 +19,7 @@ struct ImageCacheManagerTests {
         #expect(downloadedImage != nil)
         #expect(downloadedImage.size != .zero)
         
-        // Download from cache
+        // Fetch from cache
         _ = try await cacheManager.loadImage(from: url)
         #expect(downloadedImage != nil)
     }

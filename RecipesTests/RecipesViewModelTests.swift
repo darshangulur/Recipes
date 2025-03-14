@@ -45,6 +45,23 @@ struct RecipesViewModelTests {
         await viewModel.fetchRecipes()
         #expect(viewModel.recipes.isEmpty)
         #expect(viewModel.isLoading == false)
-        #expect(viewModel.error?.isEmpty == false)
+        #expect(viewModel.error == RecipesViewModel.Constants.genericError)
+    }
+    
+    @Test(
+        "Fetch Recipes Success, but empty",
+        .tags(.liveData),
+        arguments: [ErrorRoutable.empty]
+    )
+    func fetchRecipesSuccessButEmpty(routable: ErrorRoutable) async throws {
+        let viewModel: RecipesViewModel = RecipesViewModel(
+            dataModel: RecipesDataModel(
+                apiClient: APIClient()
+            )
+        )
+        
+        await viewModel.fetchRecipes(routable: ErrorRoutable.empty)
+        #expect(viewModel.recipes.isEmpty)
+        #expect(viewModel.error == RecipesViewModel.Constants.emptyRecipesError)
     }
 }
